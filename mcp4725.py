@@ -2,7 +2,7 @@
 from machine import I2C
 
 #The MCP4725 has support from 2 addresses
-BUS_ADDRESS=[0x62,0x63]
+BUS_ADDRESS = [0x62,0x63]
 
 #The device supports a few power down modes on startup and during operation 
 POWER_DOWN_MODE = {'Off':0, '1k':1, '100k':2, '500k':3}
