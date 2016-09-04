@@ -22,27 +22,46 @@ output voltage can be configured that are to be used when the MCP4725 is powered
 up.
 
 ##Using the MCP4725 in your micropython project
-There are only a lines of code needed if you want add a MCP4725 to your project.
+You need only a few lines of code to add a MCP4725 to your project.
 
 ###Create and initialze the I²C bus of your micropython board
-A micropython driver for an I²C device expects the you create and initialze a
-``machine.I2C`` instance and pass the to your drivers constructor.
+A micropython driver for an I²C device expects you to create and initialze a
+``machine.I2C`` instance and pass that to the constructor of the driver code.
 
-The arguments in the code example work for a WiPy board. If you try this with a
+The arguments used in the code example below work for a WiPy board. If you try this with a
 different board please check the pins to use for the I²C bus. 
 
 ```python
 
 from machine import I2C
-from mcp4725 import MCP4725
+import mcp4725
 
 #create a I2C bus
 i2c=I2C(0,I2C.MASTER,baudrate=400000,pins=('GP15','GP14')) 
 
 #create the MCP4725 driver
-dac=MCP4725(i2c,DEVICE_ADDRESS_1)
-
+dac=mcp4725.MCP4725(i2c,mcp4725.BUS_ADDRESS[0])
 ```
+
+###Update the output on the MCP4725
+The simple way to update the output on the DAC is to write a new value to the
+device
+```python
+dac.write(1200)
+```
+The actual voltage on the output depends on the supply voltage the powers the
+MCP4725. If it runs on 3.3V the above command would drive the output to
+``(3300/4096)*1200 = 996mV`` if the DAC is powered with 5V the output will be
+``1464mV``. If the argument to the ``write(value)`` is negative the output will
+be set to ``0V``. If the value argument is bigger than 4095 the output 
+will be set to the maximum output voltage of the DAC. 
+
+On power-up the MCP4725 will be initialized with the value read from the
+internal eeprom of the device.
+
+###Read the output voltage from the MCP4725
+ 
+
 
    
  
@@ -50,4 +69,4 @@ dac=MCP4725(i2c,DEVICE_ADDRESS_1)
   
 
 
-
+imple way to update 
