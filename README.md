@@ -2,16 +2,15 @@
 A [micropython](http://micropython.org) driver for the MCP4725 I²C DAC.
 
 The MCP4725 is a digital to analog converter chip with a 12-Bit resolution on
-the output. The MCP4725 works with a supply voltage from 3.3V to 5V. The output  
-range runs from 0V up to the supply voltage. 
+the output. The MCP4725 works with a supply voltage from 3.3V to 5V. The output range runs from 0V up to the supply voltage. 
 
-The MCP4725 can be configured to two different addresses (0x62,0x63) on the I²C bus.
+The MCP4725 can be configured to use one of two different addresses (0x62,0x63) on the I²C bus.
 That way it is possible to use 2 MCP4725 on any I²C bus. The device supports
 standard (100kbps) and fast (400kbps) and hi-speed (3.4Mbps) bus speeds. But
 hi-speed seems not to be supported by any of the micropython hardware boards.
 The fast baudrate of 400kbps works fine with the 
 [WiPy](https://www.pycom.io/solutions/py-boards/wipy/) but compared with DACs
-that are connected to a SPI-bus the MCP4725 update on the output voltage are pretty slow.
+that are connected to a SPI-bus updates to the output voltage on a MCP4725 are still pretty slow.
 
 The MCP4725 supports 3 different power-down modes where the output voltage
 driver shuts down and the device goes to sleep to save energy. The cips wakes up
@@ -63,7 +62,7 @@ internal eeprom of the device.
 The power-down mode (see
 [Datasheet](http://www.microchip.com/wwwproducts/en/en532229)) and the output
 value of the DAC can be configured for the active session and for future
-sessions by wrting the settings into an internal eeprom of the DAC.
+sessions by saving the settings in an internal eeprom of the DAC.
 
 Power-down modes are selected by the keys in the POWER_DOWN_MODE dict.
 ```python
@@ -71,8 +70,7 @@ POWER_DOWN_MODE = {'Off':0, '1k':1, '100k':2, '500k':3}
 ```
 
 ```python
-#configure the DAC to go into power-down mode and set the output value to
-maximum output.
+#configure the DAC to go into power-down mode and set the output value to maximum output.
 dac.config('100k',4096)
 ```
 After running the command the output value will is set to its maximum, but since the
