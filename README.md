@@ -60,9 +60,32 @@ On power-up the MCP4725 will be initialized with the value read from the
 internal eeprom of the device.
 
 ###Configure the MCP4725
-TODO: write this chapter
+The power-down mode (see
+[Datasheet](http://www.microchip.com/wwwproducts/en/en532229)) and the output
+value of the DAC can be configured for the active session and for future
+sessions by wrting the settings into an internal eeprom of the DAC.
 
-###Read the settings and the output voltage of the MCP4725
+Power-down modes are selected by the keys in the POWER_DOWN_MODE dict.
+```python
+POWER_DOWN_MODE = {'Off':0, '1k':1, '100k':2, '500k':3}
+```
+
+```python
+#configure the DAC to go into power-down mode and set the output value to
+maximum output.
+dac.config('100k',4096)
+```
+After running the command the output value will is set to its maximum, but since the
+DAC is in power-down mode this will not be measurable on the output pin.
+
+```python
+#configure the DAC to output ``Vdd/2`` on power-up or after a reset
+dac.config('Off',2048, eeprom=True)
+```
+This configuration will be saved in the eeprom of the DAC and will be used
+everytime the DAC is powered up or reset.
+
+###Read settings and output voltage of the MCP4725
 The MCP4725 support a single read command that returns the current configuration as well as the configuration stored in the eeprom of the device. 
 ```python
 >>>result=dac.read()
@@ -71,31 +94,27 @@ The MCP4725 support a single read command that returns the current configuration
 ```
 The method returns a tuple with 5 items. 
 
-0. The busy-flag of the eeprom on the dac. If ``True`` the DAC is busy writing
+1. The busy-flag of the eeprom on the dac. If ``True`` the DAC is busy writing
    the values for power-down mode and the startup output value to its internal
 eeprom. If ``False`` the DAC is ready for a new config setting.
-1. The current power-down configuration of the DAC. Returns a string with the
+2. The current power-down configuration of the DAC. Returns a string with the
    active setting. (see
 [Datasheet](http://www.microchip.com/wwwproducts/en/en532229))
-2. The current outout value
-3. The power-down configuration stored in the eeprom. This setting takes effect
+3. The current outout value
+4. The power-down configuration stored in the eeprom. This setting takes effect
    when the DAC is reset or powered up.
-4. The output value  configuration stored in the eeprom. This setting takes effect
+5. The output value  configuration stored in the eeprom. This setting takes effect
    when the DAC is reset or powered up.
 
+The result shown in the code example will read as
 
-
-
-The first one is a flag that tells you
-wether a previous call to ``config()`` that included an update to the eeprom of
-the DAC has finshed. If ``result[0]`` is ``False``` the eeprom was updated. if
-``True`` the write to the eeprom is still in progress. 
-
-The second item in the tuple is the current power-down-mode the device is in.
-The third item is the current setting of the DAC-output.
-The fourth item is the power-down-mode the device will be in on startup.
-The fifth and last item is the output voltage of the device on startup. 
-
+* Write to eeprom of the chip has finshed
+* The power-down mode is ``'Off'``, the DACs output on.
+* The output is set to ``300/4096`` of the supply voltage of the DAC.
+* On powerup or after a reset the DAC will go into power-down mode ``'1k'`` (see
+[Datasheet](http://www.microchip.com/wwwproducts/en/en532229)).
+* The output voltage on startup or after a reset will be ``200/4096`` of the supply
+  voltage.
 
 ##Example session on the REPL
 ```python
