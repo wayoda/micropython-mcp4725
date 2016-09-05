@@ -25,9 +25,9 @@ class MCP4725:
         buf=bytearray(5)
         if self.i2c.readfrom_into(self.address,buf) ==5:
             eeprom_write_busy=(buf[0] & 0x80)==0
-            power_down=((buf[0] >> 1) & 0x03)
+            power_down=self._powerDownKey((buf[0] >> 1) & 0x03)
             value=((buf[1]<<8) | (buf[2])) >> 4
-            eeprom_power_down=(buf[3]>>5) & 0x03
+            eeprom_power_down=self._powerDownKey((buf[3]>>5) & 0x03)
             eeprom_value=((buf[3] & 0x0f)<<8) | buf[4] 
             return (eeprom_write_busy,power_down,value,eeprom_power_down,eeprom_value)
         return None
@@ -47,3 +47,9 @@ class MCP4725:
         buf.append((value & 0x0F)<<4)
         return self.i2c.writeto(self.address,buf)==3
 
+    def _powerDownKey(self,value):
+        for key,item in POWER_DOWN_MODE.items():
+            if item == value:
+                return key
+                
+ 

@@ -3,7 +3,7 @@ A [micropython](http://micropython.org) driver for the MCP4725 I²C DAC.
 
 The MCP4725 is a digital to analog converter chip with a 12-Bit resolution on
 the output. The MCP4725 works with a supply voltage from 3.3V to 5V. The output  
-range is from 0V up to the supply voltage. 
+range runs from 0V up to the supply voltage. 
 
 The MCP4725 can be configured to two different addresses (0x62,0x63) on the I²C bus.
 That way it is possible to use 2 MCP4725 on any I²C bus. The device supports
@@ -28,7 +28,7 @@ You need only a few lines of code to add a MCP4725 to your project.
 A micropython driver for an I²C device expects you to create and initialze a
 ``machine.I2C`` instance and pass that to the constructor of the driver code.
 
-The arguments used in the code example below work for a WiPy board. If you try this with a
+The arguments used in the code example below work for a [WiPy](https://www.pycom.io/solutions/py-boards/wipy/) board. If you try this with a
 different board please check the pins to use for the I²C bus. 
 
 ```python
@@ -67,9 +67,25 @@ The MCP4725 support a single read command that returns the current configuration
 ```python
 >>>result=dac.read()
 >>>print(result)
->>>(False,0,300,0,200)
+>>>(False,'Off',300,'1k',200)
 ```
-The method returns a tuple with 5 items. The first one is a flag that tells you
+The method returns a tuple with 5 items. 
+0. The busy-flag of the eeprom on the dac. If ``True`` the DAC is busy writing
+   the values for power-down mode and the startup output value to its internal
+eeprom. If ``False`` the DAC is ready for a new config setting.
+1. The current power-down configuration of the DAC. Returns a string with the
+   active setting. (see
+[Datasheet](http://www.microchip.com/wwwproducts/en/en532229))
+2. The current outout value
+3. The power-down configuration stored in the eeprom. This setting takes effect
+   when the DAC is reset or powered up.
+4. The output value  configuration stored in the eeprom. This setting takes effect
+   when the DAC is reset or powered up.
+
+
+
+
+The first one is a flag that tells you
 wether a previous call to ``config()`` that included an update to the eeprom of
 the DAC has finshed. If ``result[0]`` is ``False``` the eeprom was updated. if
 ``True`` the write to the eeprom is still in progress. 
@@ -79,3 +95,26 @@ The third item is the current setting of the DAC-output.
 The fourth item is the power-down-mode the device will be in on startup.
 The fifth and last item is the output voltage of the device on startup. 
 
+
+##Example session on the REPL
+```python
+MicroPython v1.8.3-80-g1f61fe0 on 2016-08-31; WiPy with CC3200 
+Type "help()" for more information.
+>>> from machine import I2C                                                                                                                                     
+>>> i2c=I2C(0,I2C.MASTER,baudrate=400000,pins=('GP15','GP14'))
+>>> from mcp4725 import MCP4725, BUS_ADDRESS
+>>> dac=MCP4725(i2c,BUS_ADDRESS[0])
+>>> dac.read()
+(False, 'Off', 2048, 'Off',100)
+>>> dac.write(3000)
+True
+>>> dac.config(power_down='Off',value=0,eeprom=True)
+True                                                                                                                                                           
+>>> dac.read()
+(False, 'Off', 0, 'Off', 0)
+>>> dac.write(2000)
+True                                                                                                                                                           
+>>> dac.read()
+(False, 'Off', 2000, 'Off', 0)
+>>>
+```
