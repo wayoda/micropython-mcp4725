@@ -70,6 +70,7 @@ The MCP4725 support a single read command that returns the current configuration
 >>>(False,'Off',300,'1k',200)
 ```
 The method returns a tuple with 5 items. 
+
 0. The busy-flag of the eeprom on the dac. If ``True`` the DAC is busy writing
    the values for power-down mode and the startup output value to its internal
 eeprom. If ``False`` the DAC is ready for a new config setting.
