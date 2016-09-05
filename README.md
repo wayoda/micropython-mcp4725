@@ -21,8 +21,7 @@ output voltage can be configured that are to be used when the MCP4725 is powered
 up.
 
 ##Using the MCP4725 in your micropython project
-You need only a few lines of code to add a MCP4725 to your project. (see [Issue
-#1](https://github.com/wayoda/micropython-mcp4725/issues/1) if you don't like
+You need only a few lines of code to add a MCP4725 to your project. (see [Issue 1](https://github.com/wayoda/micropython-mcp4725/issues/1) if you don't like
 libraries)
 
 ###Create and initialze the device on the I²C bus of your micropython board
